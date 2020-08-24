@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	targetNamespace="urn:garage:services:geolocation:types"
+    xmlns:tns="urn:garage:services:geolocation:types"
+    elementFormDefault="qualified">
+    <xs:element name="GetLocationRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="ip" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="GetLocationResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="status" type="xs:string" />
+                <xs:element name="country" type="xs:string"></xs:element>
+                <xs:element name="city" type="xs:string"></xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>

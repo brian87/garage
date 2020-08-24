@@ -1,0 +1,53 @@
+pipeline{
+    agent any 
+    
+    triggers { pollSCM '*/5 * * * *' }
+    
+    options {
+        disableConcurrentBuilds()
+        buildDiscarder(logRotator(numToKeepStr: '5'))
+    }
+    
+    stages{       
+        
+        stage('Git: Clone') { 
+            steps{
+                sh "test -e .git && git clean -fdx 2>/dev/null || true"                    
+                git credentialsId: "jenkins-rsa", branch: "master", url: "git@github.com:SherlockFer/quickpoll.git"              
+            }
+        } 
+        
+        stage('Mvn: Compile package') { 
+            steps{                    
+                sh "mvn clean compile package"              
+            }
+        }  
+        
+        stage('Docker: Boot: Garage') { 
+            steps{                    
+                sh "make up"              
+            }
+        }
+
+        stage('Run test booking'){
+            steps{
+                sh "cd garage-api-test && java -jar karate-0.9.5.jar booking.feature"
+            }
+        }
+    }
+
+    post {
+        always {
+            publishHTML(
+                target: [
+                    allowMissing: false,
+                    alwaysLinkToLastBuild: false,
+                    keepAll: true,
+                    reportDir: "target/cucumber-html-reports",
+                    reportFiles: 'overview-features.html',
+                    reportName: "Report"
+                ]
+            ) 
+        }
+    }
+}
